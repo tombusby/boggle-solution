@@ -49,8 +49,9 @@ getAllPaths states = states ++ getAllPaths nextStates
         nextStates = concat [getNextStates state | state <- states]
 
 generateStartStates :: [([Position], BoggleWord)]
-generateStartStates = [([(x,y)], [board !!! (x,y)]) | x <- [0..n], y <- [0..n]]
+generateStartStates = [state x y | x <- [0..n], y <- [0..n]]
     where
+        state x y = ([(x,y)], [board !!! (x,y)])
         n = boardSize - 1
 
 findAllValidPaths :: [([Position], BoggleWord)]
