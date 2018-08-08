@@ -45,8 +45,26 @@ getAllPaths states = states ++ nextStates ++ getAllPaths nextStates
     where
         nextStates = concat [getNextStates state | state <- states]
 
-startState :: ([Position], [Char])
-startState = ([(0, 0)], "H")
-
 isValidSate :: ([Position], [Char]) -> Bool
 isValidSate (_, cs) = isValidWord cs
+
+generateStartStates :: [([Position], [Char])]
+generateStartStates = [([(x,y)], [board !!! (x,y)]) | x <- [0..3], y <- [0..3]]
+
+findAllValidPaths :: [([Position], [Char])]
+findAllValidPaths = filter isValidSate allPaths
+    where
+        allPaths = concat [getAllPaths [s] | s <- generateStartStates]
+
+getLongestWord :: Maybe ([Position], [Char])
+getLongestWord = case findAllValidPaths of
+    [] -> Nothing
+    xs -> Just $ last xs -- The last in the list is guaranteed to be longest
+
+main = do
+     solution <- return getLongestWord
+     case solution of
+        Nothing -> putStrLn "No valid words were found"
+        Just (ps, word) ->
+            putStrLn $ "The longest word is " ++ word ++
+                " and its path is " ++ (show . reverse $ ps)
