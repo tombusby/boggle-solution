@@ -41,7 +41,7 @@ getNextStates ((p:ps), cs) = [(p':p:ps, cs ++ [c']) | (p', c') <- getNextChar (p
 
 getAllPaths :: [([Position], [Char])] -> [([Position], [Char])]
 getAllPaths [] = []
-getAllPaths states = states ++ nextStates ++ getAllPaths nextStates
+getAllPaths states = states ++ getAllPaths nextStates
     where
         nextStates = concat [getNextStates state | state <- states]
 
