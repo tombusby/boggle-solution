@@ -1,6 +1,7 @@
 
 type Position = (Int, Int)
 type Board = [[Char]]
+type BoggleWord = [Char]
 
 boardSize :: Int
 boardSize = 4
@@ -14,7 +15,7 @@ board = ["HELA",
 (!!!) :: [[a]] -> (Int, Int) -> a
 (!!!) l (x, y) = (!!x) . (!!y) $ l
 
-isValidWord :: [Char] -> Bool
+isValidWord :: BoggleWord -> Bool
 isValidWord "HE" = True
 isValidWord "HELL" = True
 isValidWord "HELLO" = True
@@ -36,27 +37,29 @@ getNextChar seen p = above ++ below ++ left ++ right
             else
                 []
 
-getNextStates :: ([Position], [Char]) -> [([Position], [Char])]
-getNextStates ((p:ps), cs) = [(p':p:ps, cs ++ [c']) | (p', c') <- getNextChar (p:ps) p]
+getNextStates :: ([Position], BoggleWord) -> [([Position], BoggleWord)]
+getNextStates ((p:ps), cs) = [state p' c' | (p', c') <- getNextChar (p:ps) p]
+    where
+        state p' c' = (p':p:ps, cs ++ [c'])
 
-getAllPaths :: [([Position], [Char])] -> [([Position], [Char])]
+getAllPaths :: [([Position], BoggleWord)] -> [([Position], BoggleWord)]
 getAllPaths [] = []
 getAllPaths states = states ++ getAllPaths nextStates
     where
         nextStates = concat [getNextStates state | state <- states]
 
-generateStartStates :: [([Position], [Char])]
+generateStartStates :: [([Position], BoggleWord)]
 generateStartStates = [([(x,y)], [board !!! (x,y)]) | x <- [0..n], y <- [0..n]]
     where
         n = boardSize - 1
 
-findAllValidPaths :: [([Position], [Char])]
+findAllValidPaths :: [([Position], BoggleWord)]
 findAllValidPaths = filter isValidState allPaths
     where
         isValidState (_, cs) = isValidWord cs        
         allPaths = concat [getAllPaths [s] | s <- generateStartStates]
 
-getLongestWord :: Maybe ([Position], [Char])
+getLongestWord :: Maybe ([Position], BoggleWord)
 getLongestWord = case findAllValidPaths of
     [] -> Nothing
     xs -> Just $ last xs -- The last in the list is guaranteed to be longest
