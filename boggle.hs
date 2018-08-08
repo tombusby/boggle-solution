@@ -49,15 +49,15 @@ getAllPaths states = states ++ getAllPaths nextStates
         nextStates = concat [getNextStates state | state <- states]
 
 generateStartStates :: [([Position], BoggleWord)]
-generateStartStates = [state x y | x <- [0..n], y <- [0..n]]
+generateStartStates = [state (x, y) | x <- [0..n], y <- [0..n]]
     where
-        state x y = ([(x,y)], [board !!! (x,y)])
+        state p = ([p], [board !!! p])
         n = boardSize - 1
 
 findAllValidPaths :: [([Position], BoggleWord)]
 findAllValidPaths = filter isValidState $ getAllPaths generateStartStates
     where
-        isValidState (_, cs) = isValidWord cs        
+        isValidState (_, cs) = isValidWord cs
 
 getLongestWord :: Maybe ([Position], BoggleWord)
 getLongestWord = case findAllValidPaths of
