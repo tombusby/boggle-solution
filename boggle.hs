@@ -14,11 +14,17 @@ board = ["HELA",
 (!!!) :: [[a]] -> (Int, Int) -> a
 (!!!) l (x, y) = (!!x) . (!!y) $ l
 
+isValidWord :: [Char] -> Bool
+isValidWord "HE" = True
+isValidWord "HELL" = True
+isValidWord "HELLO" = True
+isValidWord _ = False
+
 isValidPos :: Position -> Bool
 isValidPos (x, y) = x >= 0 && x < boardSize && y >= 0 && y < boardSize
 
-getNextChar :: [Position] -> Position -> Board -> [(Position, Char)]
-getNextChar seen p board = above ++ below ++ left ++ right
+getNextChar :: [Position] -> Position -> [(Position, Char)]
+getNextChar seen p = above ++ below ++ left ++ right
     where
         above = getPosCommon (\(x, y) -> (x, y-1))
         below = getPosCommon (\(x, y) -> (x, y+1))
@@ -30,3 +36,17 @@ getNextChar seen p board = above ++ below ++ left ++ right
             else
                 []
 
+getNextStates :: ([Position], [Char]) -> [([Position], [Char])]
+getNextStates ((p:ps), cs) = [(p':p:ps, cs ++ [c']) | (p', c') <- getNextChar (p:ps) p]
+
+getAllPaths :: [([Position], [Char])] -> [([Position], [Char])]
+getAllPaths [] = []
+getAllPaths states = states ++ nextStates ++ getAllPaths nextStates
+    where
+        nextStates = concat [getNextStates state | state <- states]
+
+startState :: ([Position], [Char])
+startState = ([(0, 0)], "H")
+
+isValidSate :: ([Position], [Char]) -> Bool
+isValidSate (_, cs) = isValidWord cs
