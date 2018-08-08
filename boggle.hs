@@ -49,7 +49,9 @@ isValidSate :: ([Position], [Char]) -> Bool
 isValidSate (_, cs) = isValidWord cs
 
 generateStartStates :: [([Position], [Char])]
-generateStartStates = [([(x,y)], [board !!! (x,y)]) | x <- [0..3], y <- [0..3]]
+generateStartStates = [([(x,y)], [board !!! (x,y)]) | x <- [0..n], y <- [0..n]]
+    where
+        n = boardSize - 1
 
 findAllValidPaths :: [([Position], [Char])]
 findAllValidPaths = filter isValidSate allPaths
